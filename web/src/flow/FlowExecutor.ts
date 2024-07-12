@@ -41,6 +41,7 @@ import {
     FlowErrorChallenge,
     FlowLayoutEnum,
     FlowsApi,
+    FrameChallenge,
     ResponseError,
     ShellChallenge,
     UiThemeEnum,
@@ -168,6 +169,19 @@ export class FlowExecutor extends Interface implements StageHost {
         }
         this.addEventListener(EVENT_FLOW_INSPECTOR_TOGGLE, () => {
             this.inspectorOpen = !this.inspectorOpen;
+        });
+        window.addEventListener("message", (event) => {
+            const msg: {
+                source?: string;
+                context?: string;
+                message: string;
+            } = event.data;
+            if (msg.source !== "goauthentik.io" || msg.context !== "flow-executor") {
+                return;
+            }
+            if (msg.message === "submit") {
+                this.submit({} as FlowChallengeResponseRequest);
+            }
         });
     }
 
@@ -422,6 +436,8 @@ export class FlowExecutor extends Interface implements StageHost {
             </ak-empty-state>`;
         }
         switch (this.challenge.type) {
+            case ChallengeChoices.Frame:
+                return html`<iframe src=${(this.challenge as FrameChallenge).url}></iframe>`;
             case ChallengeChoices.Redirect:
                 return html`<ak-stage-redirect
                     .host=${this as StageHost}

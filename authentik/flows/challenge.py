@@ -38,6 +38,7 @@ class ChallengeTypes(Enum):
     NATIVE = "native"
     SHELL = "shell"
     REDIRECT = "redirect"
+    FRAME = "frame"
 
 
 class ErrorDetailSerializer(PassiveSerializer):
@@ -157,6 +158,18 @@ class AutoSubmitChallengeResponse(ChallengeResponse):
     """Pseudo class for autosubmit response"""
 
     component = CharField(default="ak-stage-autosubmit")
+
+
+class FrameChallenge(Challenge):
+    """Challenge type to render a frame"""
+
+    url = CharField()
+    component = CharField(default="xak-flow-frame")
+
+
+class FrameChallengeResponse(ChallengeResponse):
+
+    component = CharField(default="xak-flow-frame")
 
 
 class DataclassEncoder(DjangoJSONEncoder):
